@@ -1,33 +1,30 @@
-import axios from 'axios'
-
 const API_KEY = '23ce5eb5' // API key personal del estudiante
 const BASE_URL = 'https://www.omdbapi.com/'
 
-const api = axios.create({
-  baseURL: BASE_URL,
-  params: {
-    apikey: API_KEY
-  }
-})
-
 export const searchMovies = async (params) => {
-  const response = await api.get('', {
-    params: {
-      s: params.query,
-      type: params.type || 'movie',
-      y: params.year || '',
-      page: params.page || 1
-    }
-  })
-  return response.data
+  const url = new URL(BASE_URL)
+  url.searchParams.append('apikey', API_KEY)
+  url.searchParams.append('s', params.query)
+  url.searchParams.append('type', params.type || 'movie')
+  if (params.year) url.searchParams.append('y', params.year)
+  url.searchParams.append('page', params.page || 1)
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  return response.json()
 }
 
 export const getMovieDetails = async (imdbID) => {
-  const response = await api.get('', {
-    params: {
-      i: imdbID,
-      plot: 'full'
-    }
-  })
-  return response.data
+  const url = new URL(BASE_URL)
+  url.searchParams.append('apikey', API_KEY)
+  url.searchParams.append('i', imdbID)
+  url.searchParams.append('plot', 'full')
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  return response.json()
 }
